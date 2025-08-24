@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Liste de tâches avec points</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    h1 { color: #333; }
+    .task { margin: 5px 0; padding: 8px; background: #fff; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+    button { margin-left: 10px; }
+    .friend { margin: 5px 0; padding: 8px; background: #e6f7ff; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>📋 Liste de tâches</h1>
+  <input id="taskInput" placeholder="Nouvelle tâche">
+  <input id="taskPoints" type="number" placeholder="Points (ex: 5)" value="5">
+  <button onclick="addTask()">Ajouter tâche</button>
+  <button onclick="clearTasks()">Tout supprimer</button>
+  
+  <div id="tasks"></div>
+
+  <h2>👥 Amis</h2>
+  <input id="friendInput" placeholder="Nom de l'ami">
+  <button onclick="addFriend()">Ajouter ami</button>
+  
+  <div id="friends"></div>
+
+  <h2>🏆 Tableau des scores</h2>
+  <div id="scoreboard"></div>
+
+  <script>
+    let tasks = [];
+    let friends = [];
+    let scores = {};
+
+    function addTask() {
+      const name = document.getElementById("taskInput").value;
+      const pts = parseInt(document.getElementById("taskPoints").value) || 5;
+      if (!name) return;
+      tasks.push({name, points: pts, done: false});
+      document.getElementById("taskInput").value = "";
+      renderTasks();
+    }
+
+    function toggleTask(index) {
+      tasks[index].done = !tasks[index].done;
+      if (tasks[index].done) {
+        let friend = prompt("À qui donner les points ? (nom exact)");
+        if (friend && scores[friend] !== undefined) {
+          scores[friend] += tasks[index].points;
+        }
+      }
+      renderTasks();
+      renderScores();
+    }
+
+    function clearTasks() {
+      tasks = [];
+      renderTasks();
+    }
+
+    function renderTasks() {
+      const div = document.getElementById("tasks");
+      div.innerHTML = "";
+      tasks.forEach((t, i) => {
+        const d = document.createElement("div");
+        d.className = "task";
+        d.innerHTML = `${t.done ? "✅" : "❌"} ${t.name} (${t.points} pts) 
+          <button onclick="toggleTask(${i})">Changer état</button>`;
+        div.appendChild(d);
+      });
+    }
+
+    function addFriend() {
+      const name = document.getElementById("friendInput").value;
+      if (!name || friends.includes(name)) return;
+      friends.push(name);
+      scores[name] = 0;
+      document.getElementById("friendInput").value = "";
+      renderFriends();
+      renderScores();
+    }
+
+    function removeFriend(name) {
+      friends = friends.filter(f => f !== name);
+      delete scores[name];
+      renderFriends();
+      renderScores();
+    }
+
+    function changePoints(name, delta) {
+      if (scores[name] !== undefined) {
+        scores[name] += delta;
+        renderScores();
+      }
+    }
+
+    function renderFriends() {
+      const div = document.getElementById("friends");
+      div.innerHTML = "";
+      friends.forEach(f => {
+        const d = document.createElement("div");
+        d.className = "friend";
+        d.innerHTML = `${f} 
+          <button onclick="removeFriend('${f}')">Retirer</button>
+          <button onclick="changePoints('${f}', -5)">-5 pts</button>`;
+        div.appendChild(d);
+      });
+    }
+
+    function renderScores() {
+      const div = document.getElementById("scoreboard");
+      div.innerHTML = "";
+      friends.forEach(f => {
+        const d = document.createElement("div");
+        d.innerText = `${f}: ${scores[f]} pts`;
+        div.appendChild(d);
+      });
+    }
+  </script>
+</body>
+</html>
