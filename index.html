@@ -91,11 +91,28 @@
       document.getElementById(id).classList.add('active');
     }
 
-    // Gestion tâches / amis / scores
+    // Données
     let tasks = [];
     let friends = [];
     let scores = {};
 
+    // LocalStorage
+    function saveData() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      localStorage.setItem("friends", JSON.stringify(friends));
+      localStorage.setItem("scores", JSON.stringify(scores));
+    }
+
+    function loadData() {
+      tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+      friends = JSON.parse(localStorage.getItem("friends") || "[]");
+      scores = JSON.parse(localStorage.getItem("scores") || "{}");
+      renderTasks();
+      renderFriends();
+      renderScores();
+    }
+
+    // Tâches
     function addTask() {
       const name = document.getElementById("taskInput").value;
       const pts = parseInt(document.getElementById("taskPoints").value) || 5;
@@ -103,6 +120,7 @@
       tasks.push({name, points: pts, done: false});
       document.getElementById("taskInput").value = "";
       renderTasks();
+      saveData();
     }
 
     function toggleTask(index) {
@@ -115,11 +133,13 @@
       }
       renderTasks();
       renderScores();
+      saveData();
     }
 
     function clearTasks() {
       tasks = [];
       renderTasks();
+      saveData();
     }
 
     function renderTasks() {
@@ -134,6 +154,7 @@
       });
     }
 
+    // Amis
     function addFriend() {
       const name = document.getElementById("friendInput").value;
       if (!name || friends.includes(name)) return;
@@ -142,6 +163,7 @@
       document.getElementById("friendInput").value = "";
       renderFriends();
       renderScores();
+      saveData();
     }
 
     function removeFriend(name) {
@@ -149,13 +171,7 @@
       delete scores[name];
       renderFriends();
       renderScores();
-    }
-
-    function changePoints(name, delta) {
-      if (scores[name] !== undefined) {
-        scores[name] += delta;
-        renderScores();
-      }
+      saveData();
     }
 
     function renderFriends() {
@@ -165,12 +181,12 @@
         const d = document.createElement("div");
         d.className = "friend";
         d.innerHTML = `${f} 
-          <button onclick="removeFriend('${f}')">Retirer</button>
-          <button onclick="changePoints('${f}', -5)">-5 pts</button>`;
+          <button onclick="removeFriend('${f}')">Retirer</button>`;
         div.appendChild(d);
       });
     }
 
+    // Scores
     function renderScores() {
       const div = document.getElementById("scoreboard");
       div.innerHTML = "";
@@ -180,7 +196,9 @@
         div.appendChild(d);
       });
     }
-  </script>
 
+    // Démarrage
+    loadData();
+  </script>
 </body>
 </html>
