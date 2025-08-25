@@ -2,31 +2,27 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Liste de tâches colorée</title>
+  <title>Liste de Tâches Mobile</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      background: url("https://img.freepik.com/vecteurs-libre/fond-bulles-eau-brillante-fond-bleu_1017-26353.jpg") no-repeat center center fixed;
+      background-size: cover;
       color: #fff;
+      overflow: hidden;
     }
-    header {
-      text-align: center;
+    .screen {
+      display: none;
+      height: 100%;
       padding: 20px;
-      font-size: 2em;
-      background: rgba(0,0,0,0.2);
-    }
-    main {
-      flex: 1;
-      display: flex;
+      box-sizing: border-box;
+      background: rgba(0,0,0,0.3);
       flex-direction: column;
-      padding: 20px;
-      overflow-y: auto;
     }
+    .screen.active { display: flex; }
     input, button {
       padding: 10px;
       margin: 5px 0;
@@ -34,43 +30,68 @@
       border: none;
       font-size: 1em;
     }
-    button { cursor: pointer; background: rgba(0,0,0,0.2); color: #fff; }
+    button { cursor: pointer; background: rgba(255,255,255,0.4); color: #000; }
     .task, .friend, #scoreboard div {
       margin: 5px 0;
       padding: 10px;
       border-radius: 5px;
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.3);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      color: #000;
+    }
+    nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      background: rgba(0,0,0,0.5);
+    }
+    nav button {
+      flex: 1;
+      padding: 15px;
+      font-size: 1.2em;
     }
   </style>
 </head>
 <body>
-  <header>📋 Liste de tâches colorée</header>
-  <main>
-    <div>
-      <input id="taskInput" placeholder="Nouvelle tâche">
-      <input id="taskPoints" type="number" placeholder="Points" value="5">
-      <button onclick="addTask()">Ajouter tâche</button>
-      <button onclick="clearTasks()">Tout supprimer</button>
-    </div>
+
+  <div id="tasksScreen" class="screen active">
+    <h1>📋 Tâches</h1>
+    <input id="taskInput" placeholder="Nouvelle tâche">
+    <input id="taskPoints" type="number" placeholder="Points" value="5">
+    <button onclick="addTask()">Ajouter tâche</button>
+    <button onclick="clearTasks()">Tout supprimer</button>
     <div id="tasks"></div>
+  </div>
 
-    <div>
-      <h2>👥 Amis</h2>
-      <input id="friendInput" placeholder="Nom de l'ami">
-      <button onclick="addFriend()">Ajouter ami</button>
-      <div id="friends"></div>
-    </div>
+  <div id="friendsScreen" class="screen">
+    <h1>👥 Amis</h1>
+    <input id="friendInput" placeholder="Nom de l'ami">
+    <button onclick="addFriend()">Ajouter ami</button>
+    <div id="friends"></div>
+  </div>
 
-    <div>
-      <h2>🏆 Tableau des scores</h2>
-      <div id="scoreboard"></div>
-    </div>
-  </main>
+  <div id="scoresScreen" class="screen">
+    <h1>🏆 Scores</h1>
+    <div id="scoreboard"></div>
+  </div>
+
+  <nav>
+    <button onclick="showScreen('tasksScreen')">Tâches</button>
+    <button onclick="showScreen('friendsScreen')">Amis</button>
+    <button onclick="showScreen('scoresScreen')">Scores</button>
+  </nav>
 
   <script>
+    // Gestion des écrans
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // Gestion tâches / amis / scores
     let tasks = [];
     let friends = [];
     let scores = {};
@@ -160,5 +181,6 @@
       });
     }
   </script>
+
 </body>
 </html>
